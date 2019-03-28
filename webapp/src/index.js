@@ -3,25 +3,20 @@ import ReactDOM from "react-dom"
 import "./index.css"
 import * as serviceWorker from "./serviceWorker"
 import { createBrowserHistory } from "history"
-import { MuiThemeProvider } from "@material-ui/core/styles"
-import CssBaseline from "@material-ui/core/CssBaseline"
 import { Router, Route, Switch, Redirect } from "react-router-dom"
-import AdminLayout from "./layouts/Admin"
-import theme from "./style/themes/defaultTheme"
+import Plants from "./components/Plants"
+import Plant from "./components/Plant"
 
 const hist = createBrowserHistory()
 
 ReactDOM.render(
-    <MuiThemeProvider theme={theme}>
-        <CssBaseline>
-            <Router history={hist}>
-                <Switch>
-                    <Route path="/admin" component={AdminLayout} />
-                    <Redirect from="/" to="/admin/plants" />
-                </Switch>
-            </Router>
-        </CssBaseline>
-    </MuiThemeProvider>,
+    <Router history={hist}>
+        <Switch>
+            <Route path="/plants" exact component={Plants} />
+            <Route path="/plants/:id" exact component={Plant} />
+            <Redirect to={"/plants"} />
+        </Switch>
+    </Router>,
     document.getElementById("root"),
 )
 
