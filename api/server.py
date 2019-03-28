@@ -63,7 +63,7 @@ def add_plant():
     return plant_schema.jsonify(new_plant)
 
 
-# endpoint to show all plant
+# endpoint to show all plants
 @app.route("/plants", methods=["GET"])
 def get_plant():
     all_plants = Plant.query.all()
