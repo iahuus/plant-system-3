@@ -6,7 +6,14 @@ from stmpy import Machine, Driver
 import random
 from Mqtt_client import MQTT_Client_1
 
+"""
+Endre humidity ved å sende til topic: "team3/plant/{plant_name}/change_humidity"
+Payload skal da være humidity
 
+Sender humidity data på topic "team3/plant/humid"
+payload = "{plant_name}:{humidity}
+
+"""
 
 
 MQTT_BROKER = "localhost"#'iot.eclipse.org'  # 10.22.212.1
@@ -42,10 +49,11 @@ class HumidityChecker:
               'target': 'check_idle'}
         t3 = {'trigger': 'fallback',
               'source': 'watering_plant',
+              'effedt' : 'logg("State: check_idle");',
               'target': 'check_idle'}
 
         check_idle = {'name': 'check_idle',
-                      'entry': 'start_timer("t",2000);logg("State: check_idle");'}
+                      'entry': 'start_timer("t",2000);'}
         watering_plant = {'name': 'watering_plant',
                           'entry': 'start_timer("fallback",20000);sendToDriver("water","Watering");logg("State: watering_plant")'}
 
@@ -70,7 +78,6 @@ class HumidityChecker:
 
 
     def water_checking(self):
-        self.logg("checking humdity")
         humidity = self.mesure_humidity()
 
         self.mqtt_client.publish("team3/plant/humid", str(self.plant_name) + "-" + str(humidity))
@@ -92,8 +99,6 @@ class HumidityChecker:
         return random.randint(1, 1000)
 
     def change_treshhold(self, treshhold):
-        print("ye")
-        print(treshhold)
         self.treshhold = treshhold
 
 
@@ -141,4 +146,4 @@ class WateringMachine:
 
 
 
-HumidityChecker("1", 300)
+HumidityChecker("1", 5)

@@ -4,17 +4,15 @@ from threading import Thread
 
 
 class MQTT_Client_1:
-
     def __init__(self,driver,ch, broker, port,plant_name):
         self._logger = logging.getLogger(__name__)
+        print('logging under name {}.'.format(__name__))
+        logging.basicConfig(level=logging.INFO)
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.ch = ch
-        ch.change_humidity(100)
-        # self.plant_name = plant_name
-        # self.driver = driver
-        # self.driver.send("change_treshhold(600)","humidityCheck")
+        self.plant_name = plant_name
 
     def on_connect(self, client, userdata, flags, rc):
         print('on_connect(): {}'.format(mqtt.connack_string(rc)))
@@ -24,14 +22,11 @@ class MQTT_Client_1:
 
         # if (msg.topic == "team3/plant/" + self.plant_name):
         #     print(msg.topic + " \n " +  msg.payload)
-        print(self.humiditych.tresshold)
-        print("team3/plant/" + self.plant_name + "/change_humidity")
-        if (msg.topic == "team3/plant/" + self.plant_name + "/change_humidity"):
-            print("changing humidity treshhold to " + msg.payload.decode("utf-8"))
-            self.humiditych.change_treshhold(600)
 
-            self.humiditych.change_treshhold(int(msg.payload.decode("utf-8")))
-            print("Changed treshhold to " + str(msg.payload) + '\n')
+        if (msg.topic == "team3/plant/" + self.plant_name + "/change_humidity"):
+            self._logger.info("changing humidity treshhold from " + str(self.ch.treshhold) + " to " + str(msg.payload.decode("utf-8")))
+            self.ch.change_treshhold(int(msg.payload.decode("utf-8")))
+            self._logger.info("Changed treshhold to " + str(msg.payload.decode("utf-8")) + '\n')
 
     def send_message(self,topic, payload):
         print(topic + "  " + payload)
