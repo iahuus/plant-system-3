@@ -2,8 +2,7 @@ import paho.mqtt.client as mqtt
 import logging
 from threading import Thread
 import json
-from stmpy import Machine, Driver
-import random
+from server import *
 
 # TODO: choose proper MQTT broker address
 MQTT_BROKER = 'iot.eclipse.org'  # 10.22.212.1
@@ -15,7 +14,7 @@ MQTT_PORT = 1883
 
 logging.DEBUG  #: Most fine-grained logging, printing everything
 
-class MQTT_Client_1:
+class MQTT_Client_2:
 
     def __init__(self):
         self.client = mqtt.Client()
@@ -26,13 +25,15 @@ class MQTT_Client_1:
         print('on_connect(): {}'.format(mqtt.connack_string(rc)))
 
     def on_message(self, client, userdata, msg):
-        print('topic: {}'.format(msg.topic))
+        print('topic: {}'.format(msg.topic)+ ":\t " + msg.payload.decode("utf-8"))
 
         #splittet med '-'
         if (msg.topic == "team3/plant/humid"):
-            #msg til utf-8 - string format
-            print(msg.payload.decode("utf-8"))
+            id1, pl = msg.payload.decode("utf-8").split("-")
+            plant_update(id1)
             
+
+
 
 
             self.stm.change_treshhold(int(msg.payload))
