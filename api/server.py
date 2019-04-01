@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
 import datetime
+from mqtt_server import MQTT_Client_2
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -63,7 +64,7 @@ def add_plant():
     return plant_schema.jsonify(new_plant)
 
 
-# endpoint to show all plant
+# endpoint to show all plants
 @app.route("/plants", methods=["GET"])
 def get_plant():
     all_plants = Plant.query.all()
