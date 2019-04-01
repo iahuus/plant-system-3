@@ -5,7 +5,7 @@ import json
 from server import *
 
 # TODO: choose proper MQTT broker address
-MQTT_BROKER = 'iot.eclipse.org'  # 10.22.212.1
+MQTT_BROKER = 'iot.eclipse.org' 
 MQTT_PORT = 1883
 
 # # TODO: choose proper topics for communication
@@ -30,14 +30,8 @@ class MQTT_Client_2:
         #splittet med '-'
         if (msg.topic == "team3/plant/humid"):
             id1, pl = msg.payload.decode("utf-8").split("-")
-            plant_update(id1)
-            
+            add_reading(id1, pl)
 
-
-
-
-            self.stm.change_treshhold(int(msg.payload))
-            print("Changed treshhold to " + str(msg.payload) + '\n')
 
     def send_message(self,topic, payload):
         print(topic + "  " + payload)
