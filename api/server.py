@@ -3,7 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 import os
 import datetime
-#from mqtt_server import MQTT_Client_2
+
+# from mqtt_server import MQTT_Client_2
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -13,38 +14,43 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 
+class HumidityReading(db.Model):
+    __tablename__ = 'humidity_reading'
+
+    id = db.Column(db.Integer, primary_key=True)
+    time_stamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    value = db.Column(db.Integer)
+    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
+
+    def __init__(self, value, plant_id):
+        self.value = value
+        self.plant_id = plant_id
+
+
 class Plant(db.Model):
+    __tablename__ = 'plant'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=False)
     plant_type = db.Column(db.String(60), unique=False)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    humidity_readings = db.relationship("HumidityReading", backref="plant", lazy=True)
+    humidity_readings = db.relationship(HumidityReading, primaryjoin=id == HumidityReading.plant_id)
 
     def __init__(self, name, plant_type):
         self.name = name
         self.plant_type = plant_type
 
 
-class HumidityReading(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    time_stamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    value = db.Column(db.Integer)
-    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'),
-                         nullable=False)
-
-    def __init__(self, value, plant_id):
-        self.value = value
-        self.plant_id = plant_id                    
+class HumidityReadingSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "time_stamp", "value", "plant_id")
 
 
 class PlantSchema(ma.Schema):
     class Meta:
         fields = ("id", "name", "plant_type", "created", "humidity_readings")
 
-
-class HumidityReadingSchema(ma.Schema):
-    class Meta:
-        fields = ("id", "time_stamp", "value", "plant_id")
+    humidity_readings = ma.Nested(HumidityReadingSchema, many=True)
 
 
 humidity_reading_schema = HumidityReadingSchema()
@@ -73,7 +79,7 @@ def add_plant():
 def get_plant():
     all_plants = Plant.query.all()
     result = plants_schema.dump(all_plants)
-    return jsonify(result.data)
+    return plants_schema.jsonify(result.data)
 
 
 # endpoint to get plant detail by id
@@ -112,28 +118,18 @@ def plant_delete(id):
         return jsonify(None)
 
 
-'''# endpoint to add humidity readings
-@app.route("/plants/<id>", methods=["PUT"])
-def plant_add_reading(plant_id):
-    plant = HumidityReading.query.get(plant_id)
-    value = request.jsonify.get(value)
-
-    if value:
-        plant.value = int(value)
-
-    db.session.commit()
-    return plant_schema.jsonify(plant)'''
-
 @app.route("/reading/<id>", methods=["POST"])
 def add_reading(id):
     value = request.json.get('value')
     new_reading = HumidityReading(value, id)
 
+    plant = Plant.query.get(id)
+    plant.humidity_readings.append(new_reading)
 
-    db.session.add(new_reading)
+    db.session.add_all([new_reading, plant])
     db.session.commit()
 
-    return humidity_reading_schema.jsonify(new_reading)
+    return plant_schema.jsonify(plant)
 
 
 if __name__ == '__main__':
