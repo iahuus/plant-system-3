@@ -5,7 +5,7 @@ import json
 from stmpy import Machine, Driver
 import random
 from Mqtt_client import MQTT_Client_1
-
+from arduino_python import get_humidity
 """
 Endre humidity ved å sende til topic: "team3/plant/{plant_name}/change_humidity"
 Payload skal da være humidity
@@ -16,7 +16,7 @@ payload = "{plant_name}:{humidity}
 """
 
 
-MQTT_BROKER = "localhost"#'iot.eclipse.org'  # 10.22.212.1
+MQTT_BROKER = 'iot.eclipse.org' #"localhost"
 MQTT_PORT = 1883
 
 
@@ -67,6 +67,7 @@ class HumidityChecker:
         driver.add_machine(self.stm)
         self.driver = driver
         myclient = MQTT_Client_1(driver,self,MQTT_BROKER, MQTT_PORT,self.plant_name)
+        self.mqtt = myclient
         self.mqtt_client = myclient.client
         myclient.stm = self.stm
         myclient.stm_driver = driver
@@ -80,7 +81,7 @@ class HumidityChecker:
     def water_checking(self):
         humidity = self.mesure_humidity()
 
-        self.mqtt_client.publish("team3/plant/humid", str(self.plant_name) + "-" + str(humidity))
+        self.mqtt.send_message("team3/plant/humid", str(self.plant_name) + "-" + str(humidity))
         self.logg("humidity: " + str(humidity) + " treshhold:" + str(self.treshhold))
         if (humidity <= self.treshhold):
             self.mqtt_client.publish("team3/plant/" + self.plant_name, "humidity low")
@@ -96,7 +97,7 @@ class HumidityChecker:
         self._logger.info(info)
 
     def mesure_humidity(self):
-        return random.randint(1, 1000)
+        return get_humidity() # random.randint(1, 1000)
 
     def change_treshhold(self, treshhold):
         self.treshhold = treshhold
@@ -146,4 +147,4 @@ class WateringMachine:
 
 
 
-HumidityChecker("1", 5)
+HumidityChecker("1", 200)
