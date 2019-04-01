@@ -6,6 +6,8 @@ from stmpy import Machine, Driver
 import random
 from Mqtt_client import MQTT_Client_1
 from arduino_python import get_humidity
+from sense_hat import SenseHat
+
 """
 Endre humidity ved å sende til topic: "team3/plant/{plant_name}/change_humidity"
 Payload skal da være humidity
@@ -26,9 +28,13 @@ logging.DEBUG  #: Most fine-grained logging, printing everything
 # logging.INFO:  Only the most important informational log items
 # logging.WARN:  Show only warnings and errors.
 # logging.ERROR: Show only error messages.
+green = (76, 187, 23)
+red = (255,0,0)
+yellow = (250,250,0)
 
 class HumidityChecker:
     def __init__(self, plant_name, treshhold):
+        self.sense = SenseHat()
         self._logger = logging.getLogger(__name__)
         logging.basicConfig(level = logging.INFO)
         print('logging under name {}.'.format(__name__))
@@ -36,6 +42,7 @@ class HumidityChecker:
         self.plant_name = plant_name
         self.treshhold = treshhold
         self.watering_machine = WateringMachine(plant_name, self)
+        self.sense.show_message("Hello", text_colour=green)
 
 
         t0 = {'source': 'initial',
@@ -75,9 +82,10 @@ class HumidityChecker:
         driver.start()
         myclient.start(broker, port)
 
-
-
-
+    def fill_red(self):
+        self.sense.clear(red)
+    def fill_green(self):
+        self.sense.clear(green)
     def water_checking(self):
         humidity = self.mesure_humidity()
 
@@ -85,8 +93,10 @@ class HumidityChecker:
         self.logg("humidity: " + str(humidity) + " treshhold:" + str(self.treshhold))
         if (humidity <= self.treshhold):
             self.mqtt_client.publish("team3/plant/" + self.plant_name, "humidity low")
+            self.fill_red()
             return 'watering_plant'
         else:
+            self.fill_green()
             return 'check_idle'
     def sendToDriver(self, action, machine):
         self.driver.send(action,machine)
