@@ -42,7 +42,7 @@ class HumidityChecker:
         self.plant_name = plant_name
         self.treshhold = treshhold
         self.watering_machine = WateringMachine(plant_name, self)
-        self.sense.show_message("Hello", text_colour=green)
+        self.sense.show_message("Hello<3", text_colour=green)
 
 
         t0 = {'source': 'initial',
