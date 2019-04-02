@@ -107,7 +107,6 @@ class HumidityChecker:
 
     def logg(self, info):
         self._logger.info(info)
-
     def mesure_humidity(self):
         return get_humidity() # random.randint(1, 1000)
 
