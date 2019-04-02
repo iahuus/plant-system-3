@@ -60,7 +60,7 @@ class HumidityChecker:
               'target': 'check_idle'}
 
         check_idle = {'name': 'check_idle',
-                      'entry': 'start_timer("t",2000);'}
+                      'entry': 'start_timer("t",4000);'}
         watering_plant = {'name': 'watering_plant',
                           'entry': 'start_timer("fallback",20000);sendToDriver("water","Watering");logg("State: watering_plant")'}
 
@@ -88,7 +88,7 @@ class HumidityChecker:
         self.sense.clear(green)
     def water_checking(self):
         humidity = self.mesure_humidity()
-
+        self.sense.show_message(str(humidity), text_colour=yellow)
         self.mqtt.send_message("team3/plant/humid", str(self.plant_name) + "-" + str(humidity))
         self.logg("humidity: " + str(humidity) + " treshhold:" + str(self.treshhold))
         if (humidity <= self.treshhold):
