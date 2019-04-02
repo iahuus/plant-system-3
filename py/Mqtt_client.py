@@ -18,7 +18,7 @@ class MQTT_Client_1:
         print('on_connect(): {}'.format(mqtt.connack_string(rc)))
 
     def on_message(self, client, userdata, msg):
-        print('topic: {}'.format(msg.topic)+ ":\t " + msg.payload.decode("utf-8"))
+        print('recieving: topic: {}'.format(msg.topic)+ ":\t " + msg.payload.decode("utf-8"))
 
         # if (msg.topic == "team3/plant/" + self.plant_name):
         #     print(msg.topic + " \n " +  msg.payload)
@@ -29,7 +29,7 @@ class MQTT_Client_1:
             self._logger.info("Changed treshhold to " + str(msg.payload.decode("utf-8")) + '\n')
 
     def send_message(self,topic, payload):
-        print(topic + "  " + payload)
+        print("sending: " + topic + "\t" + payload)
         self.client.publish(topic,payload)
 
     def start(self, broker, port):
