@@ -30,7 +30,8 @@ class MQTT_Client_2:
         #splittet med '-'
         if (msg.topic == "team3/plant/humid"):
             id1, pl = msg.payload.decode("utf-8").split("-")
-            add_reading(id1, pl)
+            print("id:" + id1 + " value: " + p1)
+            add_reading(int(id1), int(pl)
 
 
     def send_message(self,topic, payload):

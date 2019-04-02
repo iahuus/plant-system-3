@@ -131,6 +131,17 @@ def add_reading(id):
 
     return plant_schema.jsonify(plant)
 
+def add_reading(id, value):
+    new_reading = HumidityReading(value, id)
+
+    plant = Plant.query.get(id)
+    plant.humidity_readings.append(new_reading)
+
+    db.session.add_all([new_reading, plant])
+    db.session.commit()
+
+    return plant_schema.jsonify(plant)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
