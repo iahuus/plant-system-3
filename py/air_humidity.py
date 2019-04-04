@@ -3,7 +3,6 @@ from stmpy import Machine
 import random
 from Mqtt_client2 import MQTT_Client_2
 from sense_hat import SenseHat
-import math
 
 class AirHumidity:
     def __init__(self, plant_name, myclient):
@@ -18,7 +17,7 @@ class AirHumidity:
         self.mqtt = myclient
 
     def sendHumid(self):
-        humidity = math.rount(self.sh.get_humidity(),3)
+        humidity = round(self.sh.get_humidity(),3)
         self.mqtt.send_message("team3/plant/air",str(self.plant_name) + "-" + str(humidity))
 
     # initial transition
