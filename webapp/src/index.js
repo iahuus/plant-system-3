@@ -15,6 +15,7 @@ axios.defaults.headers["Access-Control-Allow-Origin"] = "*"
 
 ReactDOM.render(
     <div className={"App"}>
+
         <Router history={hist}>
             <Switch>
                 <Route path="/plants" exact component={Plants} />

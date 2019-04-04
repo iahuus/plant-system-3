@@ -33,13 +33,14 @@ class Plants extends React.Component {
         this.state = {
             redirectTo: null,
             plants: null,
+            newPlantOpen: false,
         }
     }
 
     componentDidMount() {
-        axios.get("/plants").then(plants => {
-            console.log(plants)
-            this.setState({ plants: plants.data })
+        axios.get("/plants").then(res => {
+            let plants = res.data
+            this.setState({ plants })
         })
     }
 
@@ -48,11 +49,24 @@ class Plants extends React.Component {
         console.log(`Plant ${id} clicked!`)
     }
 
+    onSubmitNewPlant = () => {
+        console.log("New plant")
+        this.setState({ newPlantOpen: false })
+    }
+
     render() {
         if (this.state.redirectTo) {
             return <Redirect to={`/plants/${this.state.redirectTo}`} />
         } else if (this.state.plants) {
-            return <PlantsComponent plants={this.state.plants} onClickPlant={this.onClickPlant} />
+            return (
+                <PlantsComponent
+                    onClickNewPlant={() => this.setState({ newPlantOpen: true })}
+                    plants={this.state.plants}
+                    onClickPlant={this.onClickPlant}
+                    onSubmitNewPlant={this.onSubmitNewPlant}
+                    newPlantOpen={this.state.newPlantOpen}
+                />
+            )
         } else {
             return (
                 <div>

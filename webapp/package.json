@@ -6,6 +6,7 @@
     "@material-ui/core": "^3.9.2",
     "@material-ui/icons": "^3.0.2",
     "axios": "^0.18.0",
+    "class-names": "^1.0.0",
     "history": "latest",
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
