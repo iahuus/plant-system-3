@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_cors import CORS
 import os
 import datetime
 
 # from mqtt_server import MQTT_Client_2
 
 app = Flask(__name__)
+CORS(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'plant_db.sqlite')
 
@@ -76,7 +78,7 @@ def add_plant():
 
 # endpoint to show all plants
 @app.route("/plants", methods=["GET"])
-def get_plant():
+def get_plants():
     all_plants = Plant.query.all()
     result = plants_schema.dump(all_plants)
     return plants_schema.jsonify(result.data)
@@ -84,7 +86,7 @@ def get_plant():
 
 # endpoint to get plant detail by id
 @app.route("/plants/<id>", methods=["GET"])
-def plant_detail(id):
+def get_plant(id):
     plant = Plant.query.get(id)
     return plant_schema.jsonify(plant)
 
@@ -107,7 +109,7 @@ def plant_update(id):
 
 # endpoint to delete plant
 @app.route("/plants/<id>", methods=["DELETE"])
-def plant_delete(id):
+def delete_plant(id):
     plant = Plant.query.get(id)
     if plant:
         db.session.delete(plant)
@@ -130,6 +132,7 @@ def add_reading(id):
     db.session.commit()
 
     return plant_schema.jsonify(plant)
+
 
 def add_reading(id, value):
     new_reading = HumidityReading(value, id)

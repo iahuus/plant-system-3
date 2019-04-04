@@ -2,18 +2,17 @@ import paho.mqtt.client as mqtt
 import logging
 from threading import Thread
 import json
-from api.server import *
-
+from server import *
 
 # TODO: choose proper MQTT broker address
-MQTT_BROKER = 'iot.eclipse.org' 
+MQTT_BROKER = 'iot.eclipse.org'
 MQTT_PORT = 1883
+
 
 # # TODO: choose proper topics for communication
 # MQTT_TOPIC_INPUT = 'plant/in'
 # MQTT_TOPIC_OUTPUT = 'plant/out'
 
-logging.DEBUG  #: Most fine-grained logging, printing everything
 
 class MQTT_Server:
 
@@ -26,18 +25,17 @@ class MQTT_Server:
         print('on_connect(): {}'.format(mqtt.connack_string(rc)))
 
     def on_message(self, client, userdata, msg):
-        print('topic: {}'.format(msg.topic)+ ":\t " + msg.payload.decode("utf-8"))
+        print('topic: {}'.format(msg.topic) + ":\t " + msg.payload.decode("utf-8"))
 
-        #splittet med '-'
-        if (msg.topic == "team3/plant/humid"):
+        # splittet med '-'
+        if msg.topic == "team3/plant/humid":
             id1, pl = msg.payload.decode("utf-8").split("-")
             print("id:" + id1 + " value: " + pl)
             add_reading(int(id1), int(pl))
 
-
-    def send_message(self,topic, payload):
+    def send_message(self, topic, payload):
         print(topic + "  " + payload)
-        self.client.publish(topic,payload)
+        self.client.publish(topic, payload)
 
     def start(self, broker, port):
 
@@ -53,5 +51,6 @@ class MQTT_Server:
             print('Interrupted')
             self.client.disconnect()
 
+
 mq = MQTT_Server()
-mq.start(MQTT_BROKER,MQTT_PORT)
+mq.start(MQTT_BROKER, MQTT_PORT)

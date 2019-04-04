@@ -10,9 +10,6 @@ import Divider from "@material-ui/core/Divider"
 import plants_icon from "../../assets/img/plants_icon.png"
 
 const styles = theme => ({
-    root: {
-        maxWidth: 500,
-    },
     list: {
         minWidth: 300,
     },

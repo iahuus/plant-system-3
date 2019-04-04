@@ -3,26 +3,66 @@ import Card from "@material-ui/core/Card"
 import { withStyles } from "@material-ui/core/styles"
 import CardContent from "@material-ui/core/CardContent"
 import CardHeader from "@material-ui/core/CardHeader"
-import { TextField } from "@material-ui/core"
+import Typography from "@material-ui/core/Typography"
+import Divider from "@material-ui/core/Divider"
+import TextField from "@material-ui/core/TextField"
+import Button from "@material-ui/core/Button"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts"
 
 const styles = theme => ({
     content: {
         display: "flex",
         flexDirection: "column",
+        minWidth: 500,
+        "& > *, & > form > *": {
+            marginTop: 24,
+        },
     },
 })
 
 const PlantComponent = props => {
-    const { classes, plant } = props
+    const { classes, plant, edit, changes, onChange, onPressEdit, submitChanges } = props
+
+    const content =
+        edit && changes ? (
+            <CardContent className={classes.content}>
+                <TextField label={"Name"} name={"name"} value={changes.name} onChange={onChange} />
+                <TextField label={"Plant type"} name={"plant_type"} value={changes.plant_type} onChange={onChange} />
+                <Button variant={"contained"} color={"primary"} onClick={submitChanges}>
+                    Submit changes
+                </Button>
+            </CardContent>
+        ) : (
+            <CardContent className={classes.content}>
+                <div>
+                    <Typography>Name</Typography>
+                    <Typography variant={"h5"}>{plant.name}</Typography>
+                </div>
+                <div>
+                    <Typography>Plant type</Typography>
+                    <Typography variant={"h5"}>{plant.plant_type}</Typography>
+                </div>
+                <Divider />
+                <div>
+                    <Typography>Humidity readings</Typography>
+                    <LineChart width={450} height={450} data={plant.humidity_readings}>
+                        <Line type={"natural"} dot={false} dataKey={"value"} />
+                        <CartesianGrid />
+                        <XAxis tickCount={5} dataKey={"time_stamp"} label={"Time"} />
+                        <YAxis label={"Humidity"} />
+                    </LineChart>
+                </div>
+            </CardContent>
+        )
     return (
         <Card>
-            <CardHeader title={`${plant.name}`} />
-            <CardContent className={classes.content}>
-                <form>
-                    <TextField variant={"outlined"}>{plant.name}</TextField>
-                    <TextField variant={"outlined"}>{plant.plant_type}</TextField>
-                </form>
-            </CardContent>
+            <CardHeader
+                title={`${plant.name}`}
+                subheader={`ID: ${plant.id}`}
+                action={<Button onClick={onPressEdit}>Edit</Button>}
+            />
+            <Divider />
+            {content}
         </Card>
     )
 }
