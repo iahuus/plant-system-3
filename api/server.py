@@ -21,7 +21,19 @@ class HumidityReading(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     time_stamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    value = db.Column(db.Integer)
+    value = db.Column(db.FLOAT)
+    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
+
+    def __init__(self, value, plant_id):
+        self.value = value
+        self.plant_id = plant_id
+
+class AirHumidityReading(db.Model):
+    __tablename__ = 'air_humidity_reading'
+
+    id = db.Column(db.Integer, primary_key=True)
+    time_stamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    value = db.Column(db.FLOAT)
     plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
 
     def __init__(self, value, plant_id):
@@ -37,6 +49,7 @@ class Plant(db.Model):
     plant_type = db.Column(db.String(60), unique=False)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     humidity_readings = db.relationship(HumidityReading, primaryjoin=id == HumidityReading.plant_id)
+    air_humidity_readings = db.relationship(AirHumidityReading, primaryjoin=id == AirHumidityReading.plant_id)
 
     def __init__(self, name, plant_type):
         self.name = name
@@ -47,16 +60,23 @@ class HumidityReadingSchema(ma.Schema):
     class Meta:
         fields = ("id", "time_stamp", "value", "plant_id")
 
+class AirHumidityReadingSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "time_stamp", "value", "plant_id")
+
 
 class PlantSchema(ma.Schema):
     class Meta:
-        fields = ("id", "name", "plant_type", "created", "humidity_readings")
+        fields = ("id", "name", "plant_type", "created", "humidity_readings","air_humidity_readings")
 
     humidity_readings = ma.Nested(HumidityReadingSchema, many=True)
+    air_humidity_readings = ma.Nested(AirHumidityReadingSchema, many=True)
 
 
 humidity_reading_schema = HumidityReadingSchema()
 humidity_readings_schema = HumidityReadingSchema(many=True)
+air_humidity_reading_schema = HumidityReadingSchema()
+air_humidity_readings_schema = HumidityReadingSchema(many=True)
 
 plant_schema = PlantSchema()
 plants_schema = PlantSchema(many=True)
@@ -144,6 +164,18 @@ def add_reading(id, value):
     db.session.commit()
 
     return plant_schema.jsonify(plant)
+
+def add_air_reading(id, value):
+    new_reading = AirHumidityReading(value, id)
+
+    plant = Plant.query.get(id)
+    plant.air_humidity_readings.append(new_reading)
+
+    db.session.add_all([new_reading, plant])
+    db.session.commit()
+
+    return plant_schema.jsonify(plant)
+
 
 
 if __name__ == '__main__':
