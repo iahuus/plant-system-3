@@ -4,10 +4,10 @@ from threading import Thread
 import json
 from stmpy import Machine, Driver
 import random
-from py.Mqtt_client import MQTT_Client_1
+from Mqtt_client import MQTT_Client_1
 from arduino_python import get_humidity
 from sense_hat import SenseHat
-from py.air_humidity import AirHumidity
+from air_humidity import AirHumidity
 """
 Endre humidity ved å sende til topic: "team3/plant/{plant_name}/change_humidity"
 Payload skal da være humidity
@@ -79,8 +79,10 @@ class HumidityChecker:
         myclient.stm = self.stm
         myclient.stm_driver = driver
         self.driver.add_machine(self.watering_machine.stm)
-        self.airhumid = AirHumidity(self.plant_name,MQTT_BROKER,MQTT_PORT)
+        
+        self.airhumid = AirHumidity(self.plant_name,self.mqtt)
         self.driver.add_machine(self.airhumid.stm)
+        
         driver.start()
         myclient.start(broker, port)
 
@@ -89,7 +91,7 @@ class HumidityChecker:
     def fill_green(self):
         self.sense.clear(green)
     def water_checking(self):
-        humidity = self.mesure_humidity()
+        humidity = self.mesure_humidity()/10
         self.sense.show_message(str(humidity), text_colour=yellow)
         self.mqtt.send_message("team3/plant/humid", str(self.plant_name) + "-" + str(humidity))
         self.logg("humidity: " + str(humidity) + " treshhold:" + str(self.treshhold))
@@ -158,4 +160,4 @@ class WateringMachine:
 
 
 
-HumidityChecker("1", 200)
+HumidityChecker("1", 20)

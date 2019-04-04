@@ -1,11 +1,12 @@
 import logging
 from stmpy import Machine
 import random
-from py.Mqtt_client2 import MQTT_Client_2
+from Mqtt_client2 import MQTT_Client_2
 from sense_hat import SenseHat
+import math
 
 class AirHumidity:
-    def __init__(self, plant_name, broker,port):
+    def __init__(self, plant_name, myclient):
         self._logger = logging.getLogger(__name__)
         self._logger.warning("Created airHumidity machine")
         self.plant_name = plant_name
@@ -14,13 +15,10 @@ class AirHumidity:
                                    states=[self.idle],
                                    name='AirHumid')
         self.stm = watering_machine
-        myclient = MQTT_Client_2(self.plant_name)
         self.mqtt = myclient
-        self.mqtt.start(broker,port)
-
 
     def sendHumid(self):
-        humidity = self.sh.get_humidity()
+        humidity = math.rount(self.sh.get_humidity(),3)
         self.mqtt.send_message("team3/plant/air",str(self.plant_name) + "-" + str(humidity))
 
     # initial transition
@@ -33,4 +31,4 @@ class AirHumidity:
           'target': 'idle'}
 
     idle = {'name': 'idle',
-                      'entry': 'start_timer("t", 20000)'}
+            'entry': 'start_timer("t", 20000)'}
