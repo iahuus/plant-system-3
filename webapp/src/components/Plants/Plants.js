@@ -4,7 +4,7 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import Card from "@material-ui/core/Card"
-import { Avatar, Button, CardContent, CardHeader } from "@material-ui/core"
+import { Avatar, Button, CardContent, CardHeader, Typography } from "@material-ui/core"
 import Divider from "@material-ui/core/Divider"
 import plants_icon from "../../assets/img/plants_icon.png"
 import PlusIcon from "@material-ui/icons/Add"
@@ -20,7 +20,7 @@ const styles = theme => ({
 })
 
 const Plants = props => {
-    const { classes, plants, onClickPlant, onClickNewPlant, onSubmitNewPlant, newPlantOpen } = props
+    const { classes, plants, onClickPlant, toggleNewPlant, onSubmitNewPlant, newPlantOpen } = props
     return (
         <div>
             <Card className={classes.root}>
@@ -29,26 +29,34 @@ const Plants = props => {
                     title={"Plants"}
                     avatar={<Avatar src={plants_icon} />}
                     action={
-                        <Button mini color={"primary"} variant={"fab"} onClick={onClickNewPlant}>
+                        <Button mini color={"primary"} variant={"fab"} onClick={toggleNewPlant}>
                             <PlusIcon fontSize={"small"} />
                         </Button>
                     }
                     classes={{ action: classes.action }}
                 />
                 <Divider />
-                <CardContent>
-                    <List className={classes.list}>
-                        {plants.map(plant => {
-                            return (
-                                <ListItem key={plant.id} button onClick={() => onClickPlant(plant.id)}>
-                                    <ListItemText primary={plant.name} secondary={plant.plant_type.name} />
-                                </ListItem>
-                            )
-                        })}
-                    </List>
-                </CardContent>
+                {plants ? (
+                    <CardContent>
+                        <List className={classes.list}>
+                            {plants.map(plant => {
+                                return (
+                                    <ListItem key={plant.id} button onClick={() => onClickPlant(plant.id)}>
+                                        <ListItemText primary={plant.name} secondary={plant.plant_type.name} />
+                                    </ListItem>
+                                )
+                            })}
+                        </List>
+                    </CardContent>
+                ) : (
+                    <div>
+                        <Typography gutterBottom={true} variant={"h5"}>
+                            No plants available
+                        </Typography>
+                    </div>
+                )}
             </Card>
-            <NewPlantModal open={newPlantOpen} onSubmit={onSubmitNewPlant} />
+            <NewPlantModal open={newPlantOpen} onSubmit={onSubmitNewPlant} onClose={toggleNewPlant} />
         </div>
     )
 }

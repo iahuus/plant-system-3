@@ -42,19 +42,6 @@ class AirHumidityReading(db.Model):
         self.plant_id = plant_id
 
 
-class AirHumidityReading(db.Model):
-    __tablename__ = 'air_humidity_reading'
-
-    id = db.Column(db.Integer, primary_key=True)
-    time_stamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    value = db.Column(db.FLOAT)
-    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
-
-    def __init__(self, value, plant_id):
-        self.value = value
-        self.plant_id = plant_id
-
-
 class PlantType(db.Model):
     __tablename__ = 'plant_type'
 
@@ -84,11 +71,6 @@ class Plant(db.Model):
 
 
 class HumidityReadingSchema(ma.Schema):
-    class Meta:
-        fields = ("id", "time_stamp", "value", "plant_id")
-
-
-class AirHumidityReadingSchema(ma.Schema):
     class Meta:
         fields = ("id", "time_stamp", "value", "plant_id")
 
@@ -129,12 +111,10 @@ plant_types_schema = PlantTypeSchema(many=True)
 def add_plant():
     name = request.json.get('name')
     plant_type_id = request.json.get('plant_type')
-    print(plant_type_id)
-    print(name)
+    if not name or not plant_type_id:
+        return
     plant_type = PlantType.query.filter_by(id=plant_type_id).first()
-    print(plant_type)
     new_plant = Plant(name, plant_type)
-    print(new_plant)
 
     db.session.add(new_plant)
     db.session.commit()

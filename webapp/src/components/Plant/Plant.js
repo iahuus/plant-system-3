@@ -22,7 +22,7 @@ const styles = theme => ({
 
 const PlantComponent = props => {
     const { classes, plant, edit, changes, onChange, onPressEdit, submitChanges } = props
-
+    console.log(plant.humidity_readings)
     const content =
         edit && changes ? (
             <CardContent className={classes.content}>
@@ -53,10 +53,10 @@ const PlantComponent = props => {
                 <div>
                     <Typography>Humidity readings</Typography>
                     <LineChart width={450} height={450} data={plant.humidity_readings}>
-                        <Line type={"natural"} dot={false} dataKey={"value"} />
+                        <Line type={"monotone"} dot={false} dataKey={"value"} />
                         <CartesianGrid />
-                        <XAxis tickCount={5} dataKey={"time_stamp"} label={"Time"} />
-                        <YAxis label={"Humidity"} />
+                        <XAxis dataKey={"time_stamp"} />
+                        <YAxis label={"Humidity"} domain={[0, 110]} />
                     </LineChart>
                 </div>
             </CardContent>

@@ -13,6 +13,7 @@ import FormControl from "@material-ui/core/FormControl"
 import InputLabel from "@material-ui/core/InputLabel"
 import axios from "axios"
 import { CardContent } from "@material-ui/core"
+import CloseIcon from "@material-ui/icons/Close"
 
 const styles = theme => ({
     modal: {
@@ -32,6 +33,13 @@ const styles = theme => ({
             marginTop: 24,
             height: 32,
         },
+    },
+    card: {
+        padding: 24,
+    },
+    closeButton: {
+        left: -30,
+        top: -15,
     },
 })
 
@@ -64,7 +72,12 @@ class NewPlantModal extends React.Component {
         const { classes, open } = this.props
         return (
             <Modal open={open} className={cn(classes.modal, classes.flexColumnCenter)}>
-                <Card className={cn(classes.root, classes.flexColumnCenter)}>
+                <Card className={classes.card}>
+                    <div>
+                        <Button className={classes.closeButton} size={"small"} onClick={this.props.onClose}>
+                            <CloseIcon fontSize={"small"} />
+                        </Button>
+                    </div>
                     <Typography gutterBottom={true} variant={"h4"}>
                         New plant
                     </Typography>
