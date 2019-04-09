@@ -15,7 +15,7 @@ class Plant extends React.Component {
     componentDidMount() {
         const id = parseInt(this.props.match.params.id)
         axios.get(`/plants/${id}`).then(({ data }) => {
-            this.setState({ plant: data, changes: data })
+            this.setState({ plant: data, id })
         })
     }
 
@@ -24,10 +24,8 @@ class Plant extends React.Component {
     }
 
     submitChanges = e => {
-        e.preventDefault()
-        e.stopPropagation()
-        console.log("Changes: ")
-        console.log(this.state.changes)
+
+        axios.patch(`/plants/${this.state.id}`, { ...this.state.changes })
     }
 
     render() {
@@ -38,7 +36,7 @@ class Plant extends React.Component {
                 onPressEdit={() => this.setState({ edit: !this.state.edit })}
                 onChange={this.onChange}
                 edit={this.state.edit}
-                changes={this.state.changes}
+                changes={{ ...plant, ...this.state.changes }}
                 submitChanges={this.submitChanges}
             />
         ) : null

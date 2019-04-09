@@ -1,8 +1,6 @@
 import paho.mqtt.client as mqtt
-import logging
 from threading import Thread
-import json
-from api.server import *
+from server import *
 
 # TODO: choose proper MQTT broker address
 MQTT_BROKER = 'iot.eclipse.org'

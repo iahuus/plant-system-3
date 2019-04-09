@@ -26,11 +26,18 @@ const PlantComponent = props => {
     const content =
         edit && changes ? (
             <CardContent className={classes.content}>
-                <TextField label={"Name"} name={"name"} value={changes.name} onChange={onChange} />
-                <TextField label={"Plant type"} name={"plant_type"} value={changes.plant_type} onChange={onChange} />
-                <Button variant={"contained"} color={"primary"} onClick={submitChanges}>
-                    Submit changes
-                </Button>
+                <form className={classes.content}>
+                    <TextField label={"Name"} name={"name"} value={changes.name} onChange={onChange} />
+                    <TextField
+                        label={"Plant type"}
+                        name={"plant_type"}
+                        value={changes.plant_type}
+                        onChange={onChange}
+                    />
+                    <Button variant={"contained"} type={"submit"} color={"primary"} onClick={submitChanges}>
+                        Submit changes
+                    </Button>
+                </form>
             </CardContent>
         ) : (
             <CardContent className={classes.content}>
@@ -40,7 +47,7 @@ const PlantComponent = props => {
                 </div>
                 <div>
                     <Typography>Plant type</Typography>
-                    <Typography variant={"h5"}>{plant.plant_type}</Typography>
+                    <Typography variant={"h5"}>{plant.plant_type.name}</Typography>
                 </div>
                 <Divider />
                 <div>
