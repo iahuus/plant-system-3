@@ -42,6 +42,19 @@ class AirHumidityReading(db.Model):
         self.plant_id = plant_id
 
 
+class AirHumidityReading(db.Model):
+    __tablename__ = 'air_humidity_reading'
+
+    id = db.Column(db.Integer, primary_key=True)
+    time_stamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    value = db.Column(db.FLOAT)
+    plant_id = db.Column(db.Integer, db.ForeignKey('plant.id'))
+
+    def __init__(self, value, plant_id):
+        self.value = value
+        self.plant_id = plant_id
+
+
 class PlantType(db.Model):
     __tablename__ = 'plant_type'
 
@@ -71,6 +84,11 @@ class Plant(db.Model):
 
 
 class HumidityReadingSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "time_stamp", "value", "plant_id")
+
+
+class AirHumidityReadingSchema(ma.Schema):
     class Meta:
         fields = ("id", "time_stamp", "value", "plant_id")
 
@@ -194,6 +212,18 @@ def add_reading(id, value):
 
     plant = Plant.query.get(id)
     plant.humidity_readings.append(new_reading)
+
+    db.session.add_all([new_reading, plant])
+    db.session.commit()
+
+    return plant_schema.jsonify(plant)
+
+
+def add_air_reading(id, value):
+    new_reading = AirHumidityReading(value, id)
+
+    plant = Plant.query.get(id)
+    plant.air_humidity_readings.append(new_reading)
 
     db.session.add_all([new_reading, plant])
     db.session.commit()
